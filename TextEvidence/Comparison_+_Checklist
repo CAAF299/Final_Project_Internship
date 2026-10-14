@@ -54,6 +54,24 @@ Final Product :
 -A Simple repository with 2 Branches, 1 with the Java Backend and
 the web frontend resources and installation instructions, and another one with the evidence.
 
+-README with the setup , configuration , design, and deployment.
 
+-Illustrated diagram with a simplified explenation on how the API works.
+
+-Credentials : Key for ssh'ing the API's Instance, and the CLI keys for 
+login in the CLI as the IAM user. The controllers used were the ones involved in the API Java code (Like @RestController) where they recieve requests, process the info , and send back a response.
+
+
+-Costs: Minimal, Mostly in EC2. The rest went in tandum with the AWS Free tier. These being :
+
+-IAM (Free)
+-Lambda
+-API Gateway
+-S3
+
+
+-AWS Maintanence checklist: Done (listed above) 
+
+-Demonstration is located in the image evidence as a video
 
 
