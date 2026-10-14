@@ -337,26 +337,31 @@ page.
     the webpage.
     
 #Update system packages and install Java and utilities
+
 sudo apt update && sudo apt upgrade -y
 sudo apt install openjdk-17-jdk -y
 sudo apt install -y ca-certificates curl
 
 #Set up Docker's official keys
+
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 #Install Docker Engine and plugins
+
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 #Install and configure Nginx
+
 sudo apt install nginx -y
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
 #Clean default Nginx page and deploy web files from repository
+
 sudo rm /var/www/html/index.nginx-debian.html
 git clone --depth 1 --single-branch --branch feat/API_Assets --no-checkout https://github.com/CAAF299/Final_Project_Internship
 cd Final_Project_Internship/
