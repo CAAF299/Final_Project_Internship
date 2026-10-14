@@ -11,8 +11,6 @@ Requirements :
 -Docker (if you want to run with docker).
 
 
-
-
 //INTRODUCTION - ARCHITECTURE : 
 
 
@@ -23,8 +21,11 @@ Backend converts the payload data into a computable object.
 
 After the proper logic and calculations are applied, the object than gets converted
 back to a key-value pair format and it is saved as a record in a DynamoDB data table.
-DynamoDB uses a non-relational format for storing data, so it is perfect for this task.
- 
+DynamoDB uses a non-relational behavior for storing data, making it flexible for this
+task.
+
+
+
 
 //TESTING AND SENDING REQUESTS
 
@@ -32,19 +33,19 @@ DynamoDB uses a non-relational format for storing data, so it is perfect for thi
 STEP 1 : Setting up the environment.
 
 
-1. Clone the repository folder from the branch "Final Project"
+1. Clone the repository folder from the branch "feat/API_Assets"
 
-git clone --depth 1 --single-branch --branch feat/Final-Project --no-checkout https://github.com/CAAF299/OOP-experimental/
+git clone --depth 1 --single-branch --branch feat/API_Assets --no-checkout https://github.com/CAAF299/Final_Project_Internship
 
 
 2. Go inside the folder
 
-cd OOP-experimental/
+cd Final_Project_Internship/
 
 
 3. Only acquire the "API" folder
 
-git sparse-checkout set API 
+git sparse-checkout set Backend 
 
 
 4. Download the folder
@@ -193,7 +194,8 @@ Requirements :
 
 -An AWS Free Tier account, in order to gain access to the AWS Console.
 
-
+-an IAM user with AdministratorAccess privilage and cloud access, for
+the sake on not using root for this.
 
 1. Go to your AWS Console, and create an all purpose, basic S3 bucket.
 
@@ -356,8 +358,10 @@ sudo systemctl enable nginx
 
 # Clean default Nginx page and deploy web files from repository
 sudo rm /var/www/html/index.nginx-debian.html
-git clone https://github.com/CAAF299/website-assets
-cd website-assets/
+git clone --depth 1 --single-branch --branch feat/API_Assets --no-checkout https://github.com/CAAF299/Final_Project_Internship
+cd Final_Project_Internship/
+git sparse-checkout set Frontend_Assets
+cd Frontend-Assets/
 sudo cp index.html result.html rstyle.css script.js styles.css /var/www/html/ 
 
 
@@ -367,12 +371,73 @@ sudo cp index.html result.html rstyle.css script.js styles.css /var/www/html/
 
 http://ec2-[public-ip-in-hashes].[region-in-hashes].compute.amazonaws.com/[endpoint] (Frontend)
 
-https://[API_Gateway_ID].execute-api.[REGION].amazonaws.com/default/api/users (For testing with curl POST, PUT and DELETE requests).
+https://[API_Gateway_ID].execute-api.[region-in-hashes].amazonaws.com/default/api/users (For testing with curl POST, PUT and DELETE requests).
 
-https://[API_Gateway_ID].execute-api.[REGION].amazonaws.com/default/api/users/info (Checking with a GET request if its alive).
-
-
+https://[API_Gateway_ID].execute-api.[region-in-hashes].amazonaws.com/default/api/users/info (Checking with a GET request if its alive).
 
 
+
+//TROUBLESHOOTING: 
+
+
+If you have an error when making a request, you may have done 1 of 
+these mistakes:
+
+
+1. You didn't append the "/default" in the url. Please do it before 
+   curling with "/api/users"
+
+
+2. You havent met the parameters of the info required in a field.
+
+   -If you are interacting with the frontend, and get a popup, press F12
+   and head over to the "network" section , and look for an error like :
+   "First name needs to be at least 4 characters long".
+
+   -If you are doing this with curl, just send it again with the proper info,
+   it'll behave identically.
+
+
+3. You are running it locally. Use the "http://localhost:8080/default/[endpoint]" 
+   if you are running it on your local PC via docker or maven and doing the request
+   with curl.
+
+
+//TECHNICAL CHOICES
+
+
+Using DynamoDB over another Database Management System : 
+
+DynamoDB is a flexible, non-relational database system, using key:value pairs
+as the format for their entries. This helps a lot because its simple to manage
+and set up + it combines perfectly with the app. It helped me understand that 
+the record needs a sort of a unique ID number for it to be queried.
+
+
+Implementing Lambda instead of just an EC2 instance :
+
+Similarly to DynamoDB, it is a Fully Managed Service, meaning that its flexibility
+and ease of use made me focus more on the actual project than anything. It worked
+seamlessly without any complex configuration aside from the API Gateway. It is super
+convenient for Backend deployment.
+
+
+Using cartoons over minimalism in the Diagram :
+
+I think the exaggeration of the illustrations isn't just for aesthetic purposes, rather
+than it gives an explicit idea on the architecture in a simplified form, while making it
+memorable for the consumer, and making it easy to understand in a few words , without over-
+complicating things.
+
+
+Implementing those services over any other service:
+
+The objective of the project is to familiarize myself with the environment of Cloud Architecture,
+and it honestly made me understand a lot more with these services. The services used are easy to
+learn and manage, prioritizing my learning in the general idea on how it works and it's inner workings
+over fancy cloud jargon and technical terms.
+
+
+ 
 
 
