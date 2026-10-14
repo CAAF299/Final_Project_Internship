@@ -210,4 +210,169 @@ Requirements :
    text field, and hit "OK"
 
 
+5. Go to the "Configuration" section, click on "Triggers", and select "Add trigger"
+
+
+6. Select from the list "API Gateway", select "create a new API", and   select "HTTP"
+
+7. Now that the trigger is created, click on the Underlined Name 
+   next to the "API Gateway:" of your trigger.
+
+8. On the "Routes" section, click on "Create", and make these 2:
+
+
+  -instead of "/" , type "$default"
+  -instead of "/", type "/{proxy+}" with the method said to "ANY"
+
+
+9. In the "Integrations" section, click on "Edit" and do the following:
+
+   -Enter your region and the lambda function from the dropdown lists.
+   -Click on "Advanced Settings" and select the Payload format version to "1.0"
+
+   -click on "Grant API Gateway permission to invoke function" and click on "Save"
+
+
+
+10. On "CORS", click on "Configure" and enter this information to its respective fields:
+
+
+   -Access-Control-Allow-Origin: *
+   -Access-Control-Allow-Headers: *
+   -Access-Control-Allow-Methods: GET, POST, OPTIONS
+   -Access-Control-Expose-Headers: *
+
+and save it.
+
+
+11. Back in the "Configuration" section, click on "Permissions", scroll down to 
+   "Resource-based policy statements" and replace the code in there with this: 
+
+
+    {
+  "Version": "2012-10-17",
+  "Id": "default",
+  "Statement": [
+    {
+      "Sid": "apigateway-any-proxy",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:[region]:[IAM ID]:function:[Lambda_Function_Name],
+      "Condition": {
+        "ArnLike": {
+          "AWS:SourceArn": "arn:aws:execute-api:[region]:[IAM ID]:[api-trigger-id]/*/*/*"
+        }
+      }
+    }
+  ]
+}
+
+
+Fill these [] fields with the actual info. The api trigger id can be found in the main API Gateway
+page.
+
+
+
+
+
+12. Finally, head over to EC2 , and select "Launch an Instance" and click "Launch without Walkthrough".
+    Then, do the following:
+
+
+    -Amazon image : set it to Ubuntu
+
+    -Keypair : Set it to "Proceed without Keypair" 
+
+    -Network Settings ; Firewall (Security Groups) : Check
+    both HTTP and HTTPS traffic checkboxes.
+
+
+	click on "Launch Instance"
+
+
+13. In the Same EC2 menu, click on "Security Groups" and edit the security group that your instance
+    created by default (often labeled "launch wizard") by selecting it and clicking on "Actions" -> "Edit inbound rules"
+
+
+14. Add a new rule, and add the following: 
+
+    -Type: Custom TCP
+    -Port range : 8080
+    -Source type: Custom
+    -Source : 0.0.0.0/0
+
+
+    (Make sure that every single other rule has source type to "custom" and the source as 0.0.0.0/0)
+
+	And click on "Save Rules"
+
+15. Do the same with outbound rules, though when you add the new rule, add the following:
+
+    -Type: All traffic.
+    -Destination type: Custom
+    -Destination: 0.0.0.0/0
+
+
+
+16. Go to the "Elastic IPs" section, and allocate a new IPV4 address.
+
+
+
+17. Select your new allocated address, go to "Actions" and select "Associate IP Address"
+    then, select your EC2 instance.
+    
+    
+18. Go back to your instance dashboard, select your instance and click on "Instance State".
+    Set it to "Start" and then click on "Connect", as well as in the next page.
+    
+    
+ 
+19. Copy and paste these commands, which installs and configures Docker, Nginx, and
+    the basic system utilities. Nginx is needed for the frontend to be rendered on 
+    the webpage.
+    
+# Update system packages and install Java and utilities
+sudo apt update && sudo apt upgrade -y
+sudo apt install openjdk-17-jdk -y
+sudo apt install -y ca-certificates curl
+
+# Set up Docker's official keys
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine and plugins
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Install and configure Nginx
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+# Clean default Nginx page and deploy web files from repository
+sudo rm /var/www/html/index.nginx-debian.html
+git clone https://github.com/CAAF299/website-assets
+cd website-assets/
+sudo cp index.html result.html rstyle.css script.js styles.css /var/www/html/ 
+
+
+
+20. For testing endpoints, the following are: 
+
+
+http://ec2-[public-ip-in-hashes].[region-in-hashes].compute.amazonaws.com/[endpoint] (Frontend)
+
+https://[API_Gateway_ID].execute-api.[REGION].amazonaws.com/default/api/users (For testing with curl POST, PUT and DELETE requests).
+
+https://[API_Gateway_ID].execute-api.[REGION].amazonaws.com/default/api/users/info (Checking with a GET request if its alive).
+
+
+
+
+
 
